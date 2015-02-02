@@ -4,8 +4,9 @@
     <title>BizChat</title>
     <link rel="stylesheet" href="foundation-5.5.0/css/foundation.css">
     <link rel="stylesheet" href="application.css">
-    <script src="lib/jquery-1.11.2.min.js"></script>
-    <script src="lib/ejs_production.js"></script>
+    <script src="js/lib/jquery-1.11.2.min.js"></script>
+    <script src="js/lib/ejs_production.js"></script>
+    <script src="js/application.js"></script>
   </head>
   <body>
     <div class="row">
@@ -16,12 +17,15 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <div class="large-12 columns">
-          <div class="panel">
-            <input type="text" placeholder="Enter your message..." />
-          </div>
+        <div class="panel" id="chat-window">
         </div>
       </div>
     </div>
+
+    <script>
+      (function () {
+        window.BizChat.initialize();
+      })();
+    </script>
   </body>
 </html>
