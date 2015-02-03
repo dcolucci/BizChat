@@ -12,34 +12,34 @@ window.BizChat = {
     "siteValuePropResponse"
   ],
 
-  // Used to sequentially process dialogues within conversation
-  DialogueQueue: [],
-
   // Store data retrieved from user inputs to send to server
   CollectedData: {},
 
   initialize: function () {
-    for (var i = 0; i < this.DialogueOrder.length; i++) {
-      this.DialogueQueue.push(this.DialogueOrder[i]);
+    var otherCallback = function () {
+      console.log("hi again");
     };
 
-    while (this.DialogueQueue.length > 0) {
-      this.handleDialogue(this.DialogueQueue.splice(0,1)[0]);
+    var callback = function () {
+      setTimeout(otherCallback, 1000);
+      console.log("hi");
     };
 
-    this.endConvo();
+    setTimeout(callback, 1000);
   },
 
   handleDialogue: function (dialogueName) {
     var $html = $(this.Dialogues[dialogueName]());
     var $inputLines = $($html.find('li'));
 
+    var that = this;
     $inputLines.each (function () {
-      console.log($(this).html());
-
+      that.handleLine($(this));
     });
+  },
 
-
+  handleLine: function ($line) {
+    console.log($line.html());
   },
 
   endConvo: function () {
