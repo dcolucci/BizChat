@@ -16,26 +16,40 @@ window.BizChat = {
   CollectedData: {},
 
   initialize: function () {
-    var otherCallback = function () {
-      console.log("hi again");
+    var index = 0;
+    var currDialogue = '';
+    var that = this;
+
+    var queueDialogue = function (callback) {
+      if (index === that.DialogueOrder.length) {
+        return;
+      }
+
+      currDialogue = that.DialogueOrder[index];
+      index++;
+
+      callback(
+        currDialogue,
+        queueDialogue.bind(that, that.handleDialogue.bind(that))
+      );
     };
 
-    var callback = function () {
-      setTimeout(otherCallback, 1000);
-      console.log("hi");
-    };
-
-    setTimeout(callback, 1000);
+    queueDialogue(this.handleDialogue.bind(this));
   },
 
-  handleDialogue: function (dialogueName) {
+  handleDialogue: function (dialogueName, callback) {
     var $html = $(this.Dialogues[dialogueName]());
     var $inputLines = $($html.find('li'));
 
-    var that = this;
-    $inputLines.each (function () {
-      that.handleLine($(this));
-    });
+    var html = this.Dialogues[dialogueName]();
+    console.log(html);
+
+    // var that = this;
+    // $inputLines.each (function () {
+    //   that.handleLine($(this));
+    // });
+
+    setTimeout(callback, 2000);
   },
 
   handleLine: function ($line) {
@@ -56,19 +70,19 @@ window.BizChat = {
     },
 
     siteValueProp: function () {
-
+      return '<span>this is the site value prop</span>';
     },
 
     userValueProp: function () {
-
+      return '<span>this is the user value prop</span>';
     },
 
     userFirmSize: function () {
-
+      return '<span>this is the user firm size</span>';
     },
 
     siteValuePropResponse: function () {
-
+      return '<span>this is the site value prop response</span>';
     }
   }
 }
