@@ -41,19 +41,20 @@ window.BizChat = {
     var $html = $(this.Dialogues[dialogueName]());
     var $inputLines = $($html.find('li'));
 
-    var html = this.Dialogues[dialogueName]();
-    console.log(html);
-
-    // var that = this;
-    // $inputLines.each (function () {
-    //   that.handleLine($(this));
-    // });
+    if ($inputLines.length > 0) {
+      var that = this;
+      $inputLines.each (function () {
+        that.handleLine($(this));
+      });
+    } else {
+      $('#chat-window').append($html);
+    }
 
     setTimeout(callback, 2000);
   },
 
   handleLine: function ($line) {
-    console.log($line.html());
+    
   },
 
   endConvo: function () {
