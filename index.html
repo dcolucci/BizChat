@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="foundation-5.5.0/css/foundation.css">
     <link rel="stylesheet" href="application.css">
     <script src="js/lib/jquery-1.11.2.min.js"></script>
-    <script type="text/javascript" src="js/lib/ejs_production.js"></script>
+    <script src="js/lib/keymaster.js"></script>
     <script src="js/bizchat.js"></script>
   </head>
   <body>
@@ -24,7 +24,8 @@
 
     <script>
       (function () {
-        window.BizChat.initialize();
+        var bizChat = window.BizChat;
+        setTimeout(bizChat.kickoffChat.bind(bizChat), 1500);
       })();
     </script>
   </body>

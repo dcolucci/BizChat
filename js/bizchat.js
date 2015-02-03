@@ -3,7 +3,7 @@ window.BizChat = {
   // Specify the conversational sequence by reordering
   // the dialogue template names in this array.
   // Dialogue names correspond to functions within this.Dialogues
-  DialogueOrder: [
+  dialogueOrder: [
     "siteIntro",
     "userIntro",
     "siteValueProp",
@@ -13,19 +13,28 @@ window.BizChat = {
   ],
 
   // Store data retrieved from user inputs to send to server
-  CollectedData: {},
+  collectedData: {},
 
-  initialize: function () {
+  // Keep track of current line for which user is entering info
+  $currentLine: '',
+
+  nextCallback: function () {},
+
+  kickoffChat: function () {
     var index = 0;
     var currDialogue = '';
     var that = this;
 
+    key('return', function () {
+      that.submitResponse.call(that);
+    });
+
     var queueDialogue = function (callback) {
-      if (index === that.DialogueOrder.length) {
+      if (index === that.dialogueOrder.length) {
         return;
       }
 
-      currDialogue = that.DialogueOrder[index];
+      currDialogue = that.dialogueOrder[index];
       index++;
 
       callback(
@@ -43,18 +52,46 @@ window.BizChat = {
 
     if ($inputLines.length > 0) {
       var that = this;
+
+      var lineQueue = [];
       $inputLines.each (function () {
-        that.handleLine($(this));
+        lineQueue.push(this);
       });
+
+      var index = 0;
+      var queueLine = function (callback) {
+        if (index === lineQueue.length) {
+          return;
+        }
+
+        that.$currentLine = lineQueue[index];
+        index++;
+
+        that.nextCallback = queueLine.bind(that, that.appendLine.bind(that));
+        callback();
+      };
+
+      queueLine(that.appendLine.bind(that));
+
     } else {
       $('#chat-window').append($html);
     }
 
-    setTimeout(callback, 2000);
+    // setTimeout(callback, 2000);
+    callback();
   },
 
-  handleLine: function ($line) {
-    
+  appendLine: function () {
+    // this.$currentLine = $line;
+    $('#chat-window').append(this.$currentLine);
+  },
+
+  submitResponse: function () {
+    var response = this.$currentLine.find('.user-response').val();
+    // validate response
+    // add to collectedData
+    console.log(response);
+    this.nextCallback();
   },
 
   endConvo: function () {
@@ -63,27 +100,27 @@ window.BizChat = {
 
   Dialogues: {
     siteIntro: function () {
-      return '<span>Let us know who you are! Stating what you\'ve done prior to founding your business gives you and the company additional legitimacy and validation.</span>';
+      return '<p>Let us know who you are! Stating what you\'ve done prior to founding your business gives you and the company additional legitimacy and validation.</p>';
     },
 
     userIntro: function () {
-      return '<ul><li>here is one</li><li>here is two</li><li>here is three</li></ul>';
+      return "<ul><li>here is one</li><li>here is two<input class='user-response'></input></li><li>here is three</li></ul>";
     },
 
     siteValueProp: function () {
-      return '<span>this is the site value prop</span>';
+      return '<p>this is the site value prop</p>';
     },
 
     userValueProp: function () {
-      return '<span>this is the user value prop</span>';
+      return '<p>this is the user value prop</p>';
     },
 
     userFirmSize: function () {
-      return '<span>this is the user firm size</span>';
+      return '<p>this is the user firm size</p>';
     },
 
     siteValuePropResponse: function () {
-      return '<span>this is the site value prop response</span>';
+      return '<p>this is the site value prop response</p>';
     }
   }
 }
