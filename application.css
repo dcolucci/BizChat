@@ -1,5 +1,32 @@
 /* --- Custom CSS --- */
 
+ul {
+  list-style: none;
+}
+
+li {
+  float: left;
+}
+
+input {
+  border: 0;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+}
+
+.dialogue-bubble {
+  background: white;
+}
+
+.user-response {
+  float: left;
+}
+
+.site-response {
+  float: right;
+}
+
 #title {
   text-align: center;
 }

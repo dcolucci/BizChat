@@ -9,7 +9,7 @@ window.BizChat = {
     },
 
     userIntro: function () {
-      return "<ul><li>My name is<form class='user-response-form'><input class='user-response' id='user-name'></input></form></li><li>and I'm the<form class='user-response-form'><input class='user-response' id='user-title'></input></form></li><li>of<form class='user-response-form'><input class='user-response' id='user-company-name'></input></form></li><li>Prior to starting this company, I<form class='user-response-form'><input class='user-response' id='user-background'></input></form></li><li>where I<form class='user-response-form'><input class='user-response' id='user-accomplishment'></input></form></li></ul>";
+      return "<ul><li>My name is<form class='user-response-form'><input class='user-input' id='user-name'></input></form></li><li>and I'm the<form class='user-response-form'><input class='user-input' id='user-title'></input></form></li><li>of<form class='user-response-form'><input class='user-input' id='user-company-name'></input></form></li><li>Prior to starting this company, I<form class='user-response-form'><input class='user-input' id='user-background'></input></form></li><li>where I<form class='user-response-form'><input class='user-input' id='user-accomplishment'></input></form></li></ul>";
     },
 
     siteValueProp: function () {
@@ -17,11 +17,11 @@ window.BizChat = {
     },
 
     userValueProp: function () {
-      return "<ul><li>For<form class='user-response-form'><input class='user-response' id='target-customers'></input></form></li><li>who/that<form class='user-response-form'><input class='user-response' id='pain-point'></input></form></li><li>,<form class='user-response-form'><input class='user-response' id='product-name'></input></form></li><li>is<form class='user-response-form'><input class='user-response' id='product-type'></input></form></li><li>that<form class='user-response-form'><input class='user-response' id='key-benefits'></input></form></li></ul>";
+      return "<ul><li>For<form class='user-response-form'><input class='user-input' id='target-customers'></input></form></li><li>who/that<form class='user-response-form'><input class='user-input' id='pain-point'></input></form></li><li>,<form class='user-response-form'><input class='user-input' id='product-name'></input></form></li><li>is<form class='user-response-form'><input class='user-input' id='product-type'></input></form></li><li>that<form class='user-response-form'><input class='user-input' id='key-benefits'></input></form></li></ul>";
     },
 
     userFirmSize: function () {
-      return "<ul><li>My team has<form class='user-response-form'><input class='user-response' id='firm-size'></input></form></li></ul>";
+      return "<ul><li>My team has<form class='user-response-form'><input class='user-input' id='firm-size'></input></form></li></ul>";
     },
 
     siteValuePropResponse: function () {
@@ -89,11 +89,24 @@ window.BizChat = {
   // Processes response collection within dialogue
   handleDialogue: function (dialogueName, callback) {
     var $html = $(this.Dialogues[dialogueName]());
+    var $dialogueHolder = $('<div>')
+      .addClass('large-12')
+      .addClass('columns');
+    var $dialogueBubble = $('<div>')
+      .addClass('dialogue-bubble')
+      .addClass('large-6')
+      .addClass('columns');
+    $dialogueHolder.append($dialogueBubble);
+    $('#chat-window').append($dialogueHolder);
+
     var $inputLines = $($html.find('li'));
     var outerCallback = callback;
 
     if ($inputLines.length > 0) {
       var that = this;
+      var $list = $('<ul>');
+      $dialogueBubble.append($list);
+      $dialogueBubble.addClass('user-response');
 
       var lineQueue = [];
       $inputLines.each (function () {
@@ -110,22 +123,23 @@ window.BizChat = {
         that.$currentLine = lineQueue[index];
         index++;
 
-        that.nextCallback = queueLine.bind(that, that.appendLine.bind(that));
+        that.nextCallback = queueLine.bind(that, that.appendLine.bind(that, $list));
         callback();
       };
 
-      queueLine(that.appendLine.bind(that));
+      queueLine(that.appendLine.bind(that, $list));
 
     } else {
-      $('#chat-window').append($html);
+      $dialogueBubble.addClass('site-response');
+      $dialogueBubble.append($html);
       setTimeout(outerCallback, 1500);
     }
   },
 
-  // Appends this.$currentLine to chat window
-  appendLine: function () {
-    $('#chat-window').append(this.$currentLine);
-    $(this.$currentLine.find('.user-response')).focus();
+  // Appends this.$currentLine to $el
+  appendLine: function ($el) {
+    $el.append(this.$currentLine);
+    $el.find('.user-input').focus();
   },
 
   // Called when user hits return
@@ -137,7 +151,7 @@ window.BizChat = {
       return;
     }
 
-    var response = this.$currentLine.find('.user-response').val();
+    var response = this.$currentLine.find('.user-input').val();
 
     // validate response
     // add to collectedData
