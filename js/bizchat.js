@@ -9,25 +9,25 @@ window.BizChat = {
     },
 
     userIntro: function () {
-      return "<ul><li>here is one<input class='user-response'></input></li><li>here is two<input class='user-response'></input></li><li>here is three<input class='user-response'></input></li></ul>";
+      return "<ul><li>My name is<form class='user-response-form'><input class='user-response' id='user-name'></input></form></li><li>and I'm the<form class='user-response-form'><input class='user-response' id='user-title'></input></form></li><li>of<form class='user-response-form'><input class='user-response' id='user-company-name'></input></form></li><li>Prior to starting this company, I<form class='user-response-form'><input class='user-response' id='user-background'></input></form></li><li>where I<form class='user-response-form'><input class='user-response' id='user-accomplishment'></input></form></li></ul>";
     },
 
     siteValueProp: function () {
-      return '<p>this is the site value prop</p>';
+      return "<p>Impressive! I'd love to hear more about your company. Let's start with your value proposition.</p>";
     },
 
     userValueProp: function () {
-      return '<p>this is the user value prop</p>';
+      return "<ul><li>For<form class='user-response-form'><input class='user-response' id='target-customers'></input></form></li><li>who/that<form class='user-response-form'><input class='user-response' id='pain-point'></input></form></li><li>,<form class='user-response-form'><input class='user-response' id='product-name'></input></form></li><li>is<form class='user-response-form'><input class='user-response' id='product-type'></input></form></li><li>that<form class='user-response-form'><input class='user-response' id='key-benefits'></input></form></li></ul>";
     },
 
     userFirmSize: function () {
-      return '<p>this is the user firm size</p>';
+      return "<ul><li>My team has<form class='user-response-form'><input class='user-response' id='firm-size'></input></form></li></ul>";
     },
 
     siteValuePropResponse: function () {
-      return '<p>this is the site value prop response</p>';
+      return "<p>Very nice. Being able to clearly articulate your target customers, their challenges and how you solve them is critical.</p>";
     }
-  }
+  },
 
   // Specify the conversational sequence by reordering
   // the dialogue template names in this array.
@@ -41,7 +41,7 @@ window.BizChat = {
     "siteValuePropResponse"
   ],
 
-  // Store data retrieved from user inputs to send to server
+  // Store data retrieved from user responses
   collectedData: {},
 
   // Keep track of current line for which user is entering info
@@ -53,7 +53,7 @@ window.BizChat = {
   // Kick off the dialogue sequence between site and user
   // Sequentially calls functions referenced in this.dialogueOrder
   kickoffChat: function () {
-    this.bindKeys();
+    this.bindSubmitHandler();
 
     var index = 0;
     var currDialogue = '';
@@ -76,15 +76,17 @@ window.BizChat = {
     queueDialogue(this.handleDialogue.bind(this));
   },
 
-  // Key bindings to be created upon chat kickoff
-  bindKeys: function () {
-    var that = this;
-
-    key('return', function () {
-      that.submitResponse.call(that);
-    });
+  // Bind event handler to chat window for form submissions
+  bindSubmitHandler: function () {
+    $('#chat-window').on(
+      'submit',
+      '.user-response-form',
+      this.submitResponse.bind(this)
+    );
   },
 
+  // Processes a dialogue
+  // Processes response collection within dialogue
   handleDialogue: function (dialogueName, callback) {
     var $html = $(this.Dialogues[dialogueName]());
     var $inputLines = $($html.find('li'));
@@ -120,13 +122,17 @@ window.BizChat = {
     }
   },
 
+  // Appends this.$currentLine to chat window
   appendLine: function () {
     $('#chat-window').append(this.$currentLine);
+    $(this.$currentLine.find('.user-response')).focus();
   },
 
   // Called when user hits return
   // Does nothing unless this.$currentLine is non-null
-  submitResponse: function () {
+  submitResponse: function (event) {
+    event.preventDefault();
+
     if (this.$currentLine === null) {
       return;
     }
